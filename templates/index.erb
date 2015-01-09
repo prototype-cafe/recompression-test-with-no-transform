@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>recompression-test-with-no-transform</title>
+  <style type="text/css">
+    table { border:solid #8888aa 2px; }
+    th, td { border:solid #8888aa 1px; }
+  </style>
+  <script type="text/javascript" src="js/binaryajax.js"></script>
+  <script type="text/javascript" src="js/exif.js"></script>
+  <script type="text/javascript">
+    window.onload = function()
+    {
+      var img  = document.getElementById( "test" );
+      var exif = new Exif( img );
+
+      var size = 0;
+      var xhr = new XMLHttpRequest();
+      xhr.open('HEAD', 'test.jpg', true);
+      xhr.onreadystatechange = function(){
+      if ( xhr.readyState == 4 ) {
+        if ( xhr.status == 200 ) {
+          size = xhr.getResponseHeader('Content-Length');
+        } else {
+          size = 'ERROR';
+        }
+
+        if ( size != 'ERROR' ) {
+          if ( size == '581934' ) {
+            size = "ファイルサイズ変動：なし（" + size + "byte）";
+          } else {
+            size = "ファイルサイズ変動：あり（" + size + "byte ）";
+          }
+        }
+      }};
+      xhr.send(null);
+
+      exif.load( function()
+      {
+        var tags  = exif.getAllTags();
+        var table = "<p><strong>[解析結果]</strong></p>";
+        table += "<p><strong>" + size + "</strong></p>";
+
+        num = 0;
+        for ( val in tags) {
+          num++;
+        }
+        if ( num > 0 ) {
+          table += "<p><strong>EXIF情報：あり</strong></p>";
+        } else {
+          table += "<p><strong>EXIF情報：なし</strong></p>";
+        }
+        table += "<table><thead><tr><th>項目</th><th>値</th></tr></thead><tbody>";
+
+        var longValues = new Array();
+
+        for( var key in tags )
+        {
+          if( tags[ key ].length > 50 )
+          {
+            longValues[ longValues.length ] = { key: key, value: tags[key] };
+          }
+          else
+          {
+            table += "<tr><td>" + key + "</td>" + "<td>" + tags[ key ] + "</td></tr>";
+          }
+        }
+
+        table += "</tbody></table>";
+
+        var div = document.getElementById( "exif" );
+        div.innerHTML = table;
+      });
+    };
+  </script>
+</head>
+<body>
+recompression-test-with-no-transform
+<div>
+  <img src="test.jpg" width="25%" height="25%" id="test" />
+</div>
+<div id="exif">
+
+</div>
+</body>
+</html>
