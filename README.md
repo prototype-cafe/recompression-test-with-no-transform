@@ -1,4 +1,4 @@
-# recompression test with no transform
+# recompression test with no-transform
 
 
 ## License
